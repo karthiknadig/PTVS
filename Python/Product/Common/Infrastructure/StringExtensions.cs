@@ -110,6 +110,10 @@ namespace Microsoft.PythonTools.Infrastructure {
             return str.Substring(0, length);
         }
 
+        public static bool EqualsOrdinal(this string s, string prefix, bool ignoreCase = false) {
+            return s?.Equals(prefix, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) ?? false;
+        }
+
         public static bool StartsWithOrdinal(this string s, string prefix, bool ignoreCase = false) {
             return s?.StartsWith(prefix, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) ?? false;
         }
@@ -124,6 +128,14 @@ namespace Microsoft.PythonTools.Infrastructure {
 
         public static int IndexOfOrdinal(this string s, string value, int startIndex, int count, bool ignoreCase = false) {
             return s?.IndexOf(value, startIndex, count, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) ?? -1;
+        }
+
+        public static bool ContainsOrdinal(this string s, string prefix, bool ignoreCase = false) {
+            if (ignoreCase) {
+                return s?.ToLower()?.Contains(prefix?.ToLower()) ?? false;
+            } else {
+                return s?.Contains(prefix) ?? false;
+            }
         }
     }
 }

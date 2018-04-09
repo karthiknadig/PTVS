@@ -139,6 +139,7 @@ namespace Microsoft.PythonTools.Debugger {
                         _debuggerConnected = true;
                         _stream = new DebugAdapterProcessStream(new NetworkStream(connection.Result, ownsSocket: true));
                         _stream.Initialized += OnInitialized;
+                        _stream.Disconnected += OnDisconnected;
                         if (!string.IsNullOrEmpty(_webBrowserUrl) && Uri.TryCreate(_webBrowserUrl, UriKind.RelativeOrAbsolute, out Uri uri)) {
                             OnPortOpenedHandler.CreateHandler(uri.Port, null, null, ProcessExited, LaunchBrowserDebugger);
                         }
@@ -152,6 +153,12 @@ namespace Microsoft.PythonTools.Debugger {
 
             if (_stream == null && !_process.HasExited) {
                 _process.Kill();
+            }
+        }
+
+        private void OnDisconnected(object sender, EventArgs e) {
+            if (_useDocker) {
+                // TODO: Stop the docker container
             }
         }
 
@@ -208,6 +215,10 @@ namespace Microsoft.PythonTools.Debugger {
                     Strings.ImportPtvsdFailedTitle,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
+            }
+
+            if (_useDocker) {
+                // TODO: Remove the stopped container
             }
         }
 
