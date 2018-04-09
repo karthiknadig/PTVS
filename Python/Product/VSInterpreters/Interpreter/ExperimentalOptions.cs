@@ -24,15 +24,18 @@ namespace Microsoft.PythonTools.Interpreter {
         internal const string AutoDetectCondaEnvironmentsKey = "AutoDetectCondaEnvironments";
         internal const string UseCondaPackageManagerKey = "UseCondaPackageManager";
         internal const string UseVsCodeDebuggerKey = "UseVsCodeDebugger";
+        internal const string UseDockerContainerKey = "UseDockerContainer";
         internal static readonly Lazy<bool> _noDatabaseFactory = new Lazy<bool>(GetNoDatabaseFactory);
         internal static readonly Lazy<bool> _autoDetectCondaEnvironments = new Lazy<bool>(GetAutoDetectCondaEnvironments);
         internal static readonly Lazy<bool> _useCondaPackageManager = new Lazy<bool>(GetUseCondaPackageManager);
         internal static readonly Lazy<bool> _useVsCodeDebugger = new Lazy<bool>(GetUseVsCodeDebugger);
+        internal static readonly Lazy<bool> _useDockerContainer = new Lazy<bool>(GetUseDockerContainer);
 
         public static bool GetNoDatabaseFactory() => GetBooleanFlag(NoDatabaseFactoryKey, defaultVal: true);
         public static bool GetAutoDetectCondaEnvironments() => GetBooleanFlag(AutoDetectCondaEnvironmentsKey, defaultVal: true);
         public static bool GetUseCondaPackageManager() => GetBooleanFlag(UseCondaPackageManagerKey, defaultVal: true);
         public static bool GetUseVsCodeDebugger() => GetBooleanFlag(UseVsCodeDebuggerKey, defaultVal: true);
+        public static bool GetUseDockerContainer() => GetBooleanFlag(UseDockerContainerKey, defaultVal: true);
 
         private static bool GetBooleanFlag(string keyName, bool defaultVal) {
             using (var root = Registry.CurrentUser.OpenSubKey(ExperimentSubkey, false)) {
@@ -88,6 +91,11 @@ namespace Microsoft.PythonTools.Interpreter {
         public static bool UseVsCodeDebugger {
             get => _useVsCodeDebugger.Value;
             set => SetBooleanFlag(UseVsCodeDebuggerKey, value);
+        }
+
+        public static bool UseDockerContainer {
+            get => _useDockerContainer.Value;
+            set => SetBooleanFlag(UseDockerContainerKey, value);
         }
     }
 }

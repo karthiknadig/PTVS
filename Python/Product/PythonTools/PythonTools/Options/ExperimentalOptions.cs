@@ -28,6 +28,7 @@ namespace Microsoft.PythonTools.Options {
             AutoDetectCondaEnvironments = EO.GetAutoDetectCondaEnvironments();
             UseCondaPackageManager = EO.GetUseCondaPackageManager();
             UseVsCodeDebugger = EO.GetUseVsCodeDebugger();
+            UseDockerContainer = EO.GetUseDockerContainer();
             Changed?.Invoke(this, EventArgs.Empty);
         }
 
@@ -44,6 +45,7 @@ namespace Microsoft.PythonTools.Options {
             AutoDetectCondaEnvironments = false;
             UseCondaPackageManager = false;
             UseVsCodeDebugger = false;
+            UseDockerContainer = false;
             Changed?.Invoke(this, EventArgs.Empty);
         }
 
@@ -70,5 +72,9 @@ namespace Microsoft.PythonTools.Options {
         /// </summary>
         public bool UseVsCodeDebugger { get; set; }
 
+        /// <summary>
+        /// True to debug code by running it in a docker container
+        /// </summary>
+        public bool UseDockerContainer { get; set; }
     }
 }

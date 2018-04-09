@@ -29,6 +29,7 @@ namespace Microsoft.PythonTools.Options {
             this._condaEnvironments = new System.Windows.Forms.CheckBox();
             this._condaPackageManager = new System.Windows.Forms.CheckBox();
             this._useVsCodeDebugger = new System.Windows.Forms.CheckBox();
+            this._useDockerContainer = new System.Windows.Forms.CheckBox();
             this._mustRestartLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
@@ -47,7 +48,8 @@ namespace Microsoft.PythonTools.Options {
             this.tableLayoutPanel2.Controls.Add(this._condaEnvironments, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this._condaPackageManager, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this._useVsCodeDebugger, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this._mustRestartLabel, 0, 5);
+            this.tableLayoutPanel2.Controls.Add(this._useDockerContainer, 0, 4);
+            this.tableLayoutPanel2.Controls.Add(this._mustRestartLabel, 0, 6);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             // 
             // _condaEnvironments
@@ -71,6 +73,12 @@ namespace Microsoft.PythonTools.Options {
             this._useVsCodeDebugger.Name = "_useVsCodeDebugger";
             this._useVsCodeDebugger.UseVisualStyleBackColor = true;
             // 
+            // _useDockerContainer
+            // 
+            resources.ApplyResources(this._useDockerContainer, "_useDockerContainer");
+            this._useDockerContainer.Name = "_useDockerContainer";
+            this._useDockerContainer.UseVisualStyleBackColor = true;
+            // 
             // _mustRestartLabel
             // 
             resources.ApplyResources(this._mustRestartLabel, "_mustRestartLabel");
@@ -86,7 +94,6 @@ namespace Microsoft.PythonTools.Options {
             this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         #endregion
@@ -96,6 +103,7 @@ namespace Microsoft.PythonTools.Options {
         private System.Windows.Forms.Label _mustRestartLabel;
         private System.Windows.Forms.CheckBox _condaEnvironments;
         private System.Windows.Forms.CheckBox _condaPackageManager;
+        private System.Windows.Forms.CheckBox _useDockerContainer;
         private System.Windows.Forms.CheckBox _useVsCodeDebugger;
     }
 }

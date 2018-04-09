@@ -127,13 +127,13 @@
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="_noDatabaseFactory.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 3</value>
+    <value>12, 6</value>
   </data>
   <data name="_noDatabaseFactory.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 3, 6, 3</value>
+    <value>12, 6, 12, 6</value>
   </data>
   <data name="_noDatabaseFactory.Size" type="System.Drawing.Size, System.Drawing">
-    <value>230, 17</value>
+    <value>461, 29</value>
   </data>
   <data name="_noDatabaseFactory.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -172,13 +172,13 @@
     <value>NoControl</value>
   </data>
   <data name="_condaEnvironments.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 26</value>
+    <value>12, 47</value>
   </data>
   <data name="_condaEnvironments.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 3, 6, 3</value>
+    <value>12, 6, 12, 6</value>
   </data>
   <data name="_condaEnvironments.Size" type="System.Drawing.Size, System.Drawing">
-    <value>221, 17</value>
+    <value>441, 29</value>
   </data>
   <data name="_condaEnvironments.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -208,13 +208,13 @@
     <value>NoControl</value>
   </data>
   <data name="_condaPackageManager.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 49</value>
+    <value>12, 88</value>
   </data>
   <data name="_condaPackageManager.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 3, 6, 3</value>
+    <value>12, 6, 12, 6</value>
   </data>
   <data name="_condaPackageManager.Size" type="System.Drawing.Size, System.Drawing">
-    <value>315, 17</value>
+    <value>629, 29</value>
   </data>
   <data name="_condaPackageManager.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -241,13 +241,13 @@
     <value>True</value>
   </data>
   <data name="_useVsCodeDebugger.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 72</value>
+    <value>12, 129</value>
   </data>
   <data name="_useVsCodeDebugger.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 3, 6, 3</value>
+    <value>12, 6, 12, 6</value>
   </data>
   <data name="_useVsCodeDebugger.Size" type="System.Drawing.Size, System.Drawing">
-    <value>155, 17</value>
+    <value>308, 29</value>
   </data>
   <data name="_useVsCodeDebugger.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -267,6 +267,39 @@
   <data name="&gt;&gt;_useVsCodeDebugger.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
+  <data name="_useDockerContainer.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="_useDockerContainer.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="_useDockerContainer.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 170</value>
+  </data>
+  <data name="_useDockerContainer.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>12, 6, 12, 6</value>
+  </data>
+  <data name="_useDockerContainer.Size" type="System.Drawing.Size, System.Drawing">
+    <value>358, 29</value>
+  </data>
+  <data name="_useDockerContainer.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="_useDockerContainer.Text" xml:space="preserve">
+    <value>Use Docker containers to debug.</value>
+  </data>
+  <data name="&gt;&gt;_useDockerContainer.Name" xml:space="preserve">
+    <value>_useDockerContainer</value>
+  </data>
+  <data name="&gt;&gt;_useDockerContainer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;_useDockerContainer.Parent" xml:space="preserve">
+    <value>tableLayoutPanel2</value>
+  </data>
+  <data name="&gt;&gt;_useDockerContainer.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
   <data name="_mustRestartLabel.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Left</value>
   </data>
@@ -274,13 +307,13 @@
     <value>True</value>
   </data>
   <data name="_mustRestartLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 271</value>
+    <value>12, 550</value>
   </data>
   <data name="_mustRestartLabel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 6, 6, 6</value>
+    <value>12, 12, 12, 12</value>
   </data>
   <data name="_mustRestartLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>320, 13</value>
+    <value>657, 1</value>
   </data>
   <data name="_mustRestartLabel.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
@@ -298,7 +331,7 @@
     <value>tableLayoutPanel2</value>
   </data>
   <data name="&gt;&gt;_mustRestartLabel.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>5</value>
   </data>
   <data name="tableLayoutPanel2.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -306,11 +339,14 @@
   <data name="tableLayoutPanel2.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
+  <data name="tableLayoutPanel2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 6, 6, 6</value>
+  </data>
   <data name="tableLayoutPanel2.RowCount" type="System.Int32, mscorlib">
-    <value>6</value>
+    <value>7</value>
   </data>
   <data name="tableLayoutPanel2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>381, 290</value>
+    <value>762, 558</value>
   </data>
   <data name="tableLayoutPanel2.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -328,19 +364,19 @@
     <value>0</value>
   </data>
   <data name="tableLayoutPanel2.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="_noDatabaseFactory" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="_condaEnvironments" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="_condaPackageManager" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="_useVsCodeDebugger" Row="3" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="_mustRestartLabel" Row="5" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,Percent,100,AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="_noDatabaseFactory" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="_condaEnvironments" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="_condaPackageManager" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="_useVsCodeDebugger" Row="3" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="_useDockerContainer" Row="4" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="_mustRestartLabel" Row="6" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,Percent,100,Absolute,20" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>6, 13</value>
+    <value>12, 25</value>
   </data>
   <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 8, 6, 8</value>
+    <value>12, 15, 12, 15</value>
   </data>
   <data name="$this.Size" type="System.Drawing.Size, System.Drawing">
-    <value>381, 290</value>
+    <value>762, 558</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>PythonExperimentalOptionsControl</value>

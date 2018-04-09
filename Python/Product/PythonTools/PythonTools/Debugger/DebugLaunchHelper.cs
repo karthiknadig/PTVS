@@ -110,6 +110,11 @@ namespace Microsoft.PythonTools.Debugger {
             );
         }
 
+        private static bool GetUseDocker(IServiceProvider provider) {
+            var pyService = provider.GetPythonToolsService();
+            return pyService.ExperimentalOptions.UseDockerContainer;
+        }
+
         private static string GetLaunchJsonForVsCodeDebugAdapter(IServiceProvider provider, LaunchConfiguration config) {
             JArray envArray = new JArray();
             foreach (var kv in provider.GetPythonToolsService().GetFullEnvironment(config)) {
@@ -126,7 +131,8 @@ namespace Microsoft.PythonTools.Debugger {
                 ["remoteMachine"] = "",
                 ["args"] = GetArgs(config),
                 ["options"] = GetOptions(provider, config),
-                ["env"] = envArray
+                ["env"] = envArray,
+                ["docker"] = GetUseDocker(provider),
             };
             
             // Note: these are optional, but special. These override the pkgdef version of the adapter settings

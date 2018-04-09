@@ -28,6 +28,7 @@ namespace Microsoft.PythonTools.Options {
             _condaEnvironments.Checked = pyService.ExperimentalOptions.AutoDetectCondaEnvironments;
             _condaPackageManager.Checked = pyService.ExperimentalOptions.UseCondaPackageManager;
             _useVsCodeDebugger.Checked = pyService.ExperimentalOptions.UseVsCodeDebugger;
+            _useDockerContainer.Checked = pyService.ExperimentalOptions.UseDockerContainer;
         }
 
         internal void SyncPageWithControlSettings(PythonToolsService pyService) {
@@ -35,6 +36,7 @@ namespace Microsoft.PythonTools.Options {
             pyService.ExperimentalOptions.AutoDetectCondaEnvironments = _condaEnvironments.Checked;
             pyService.ExperimentalOptions.UseCondaPackageManager = _condaPackageManager.Checked;
             pyService.ExperimentalOptions.UseVsCodeDebugger = _useVsCodeDebugger.Checked;
+            pyService.ExperimentalOptions.UseDockerContainer = _useDockerContainer.Checked;
         }
     }
 }

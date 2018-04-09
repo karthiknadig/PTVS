@@ -45,6 +45,7 @@ namespace Microsoft.PythonTools.Debugger {
         private int _listenerPort = -1;
         private DebugAdapterProcessStream _stream;
         private bool _debuggerConnected = false;
+        private bool _useDocker = true;
 
         public DebugAdapterProcess() {
             _processGuid = Guid.NewGuid();
@@ -68,14 +69,24 @@ namespace Microsoft.PythonTools.Debugger {
 
         public static ITargetHostProcess Start(string launchJson) {
             var debugProcess = new DebugAdapterProcess();
-            debugProcess.StartProcess(launchJson);
+            var json = JObject.Parse(launchJson);
+
+            var useDocker = json["docker"].Value<bool>();
+            if (useDocker) {
+                debugProcess.StartDocker(json);
+            } else {
+                debugProcess.StartProcess(json);
+            }
             return debugProcess;
         }
 
-        private void StartProcess(string launchJson) {
+        private void StartDocker(JObject json) {
+            _useDocker = true;
+        }
+
+        private void StartProcess(JObject json) {
             var connection = InitializeListenerSocket();
 
-            var json = JObject.Parse(launchJson);
             var exe = json["exe"].Value<string>();
             var scriptAndScriptArgs = json["args"].Value<string>();
             var cwd = json["cwd"].Value<string>();
