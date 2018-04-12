@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace Microsoft.PythonTools.Docker {
     public interface IDockerService {
-        Task<string> BuildImageAsync(string buildOptions, CancellationToken ct);
-        Task<IEnumerable<IContainer>> ListContainersAsync(bool getAll = true, CancellationToken ct = default(CancellationToken));
-        Task<IEnumerable<ContainerImage>> ListImagesAsync(bool getAll = true, CancellationToken ct = default(CancellationToken));
-        Task<IContainer> GetContainerAsync(string containerId, CancellationToken ct);
-        Task<JArray> InspectAsync(IEnumerable<string> objectIds, CancellationToken ct);
-        Task<string> RepositoryLoginAsync(string username, string password, string server, CancellationToken ct);
-        Task<string> RepositoryLoginAsync(RepositoryCredentials auth, CancellationToken ct);
-        Task<string> RepositoryLogoutAsync(RepositoryCredentials auth, CancellationToken ct);
-        Task<string> RepositoryLogoutAsync(string server, CancellationToken ct);
-        Task<string> PullImageAsync(string fullImageName, CancellationToken ct);
-        Task<string> CreateContainerAsync(string createOptions, CancellationToken ct);
-        Task<string> DeleteContainerAsync(string containerId, CancellationToken ct);
-        Task<string> StartContainerAsync(string containerId, CancellationToken ct);
-        Task<string> StopContainerAsync(string containerId, CancellationToken ct);
+        string BuildImage(string buildOptions, CancellationToken ct);
+        IEnumerable<IContainer> ListContainers(bool getAll = true, CancellationToken ct = default(CancellationToken));
+        IEnumerable<ContainerImage> ListImages(bool getAll = true, CancellationToken ct = default(CancellationToken));
+        IContainer GetContainer(string containerId, CancellationToken ct);
+        JArray Inspect(IEnumerable<string> objectIds, CancellationToken ct);
+        string RepositoryLogin(string username, string password, string server, CancellationToken ct);
+        string RepositoryLogin(RepositoryCredentials auth, CancellationToken ct);
+        string RepositoryLogout(RepositoryCredentials auth, CancellationToken ct);
+        string RepositoryLogout(string server, CancellationToken ct);
+        string PullImage(string fullImageName, CancellationToken ct);
+        string CreateContainer(string createOptions, CancellationToken ct);
+        string DeleteContainer(string containerId, CancellationToken ct);
+        string StartContainer(string containerId, CancellationToken ct);
+        string StopContainer(string containerId, CancellationToken ct);
     }
 }

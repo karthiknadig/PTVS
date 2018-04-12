@@ -23,12 +23,15 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
 using Microsoft.PythonTools.Debugger.DebugEngine;
+using Microsoft.PythonTools.Docker;
 using Microsoft.PythonTools.Infrastructure;
 using Microsoft.VisualStudio.Debugger.DebugAdapterHost.Interfaces;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Newtonsoft.Json.Linq;
 
@@ -46,6 +49,10 @@ namespace Microsoft.PythonTools.Debugger {
         private DebugAdapterProcessStream _stream;
         private bool _debuggerConnected = false;
         private bool _useDocker = true;
+        private WindowsDockerService _docker;
+        private IContainerService _containerService;
+        private Docker.IContainer _container;
+
 
         public DebugAdapterProcess() {
             _processGuid = Guid.NewGuid();
@@ -81,7 +88,85 @@ namespace Microsoft.PythonTools.Debugger {
         }
 
         private void StartDocker(JObject json) {
+            var connection = InitializeListenerSocket();
+
             _useDocker = true;
+
+            var exe = json["exe"].Value<string>();
+            var scriptAndScriptArgs = json["args"].Value<string>();
+            var cwd = json["cwd"].Value<string>();
+            ParseOptions(json["options"].Value<string>());
+
+            var argsList = new List<string> {
+                string.IsNullOrWhiteSpace(_interpreterOptions) ? "" : _interpreterOptions,
+                "/usr/bin/ptvs/ptvsd_launcher.py",
+                cwd.Trim('\\'),
+                $"{_listenerPort}",
+                $"{_processGuid}",
+                $"{_debugOptions}",
+                "-g"
+            };
+            var launcherArgs = string.Join(" ", argsList.Where(a => !string.IsNullOrWhiteSpace(a)).Select(ProcessOutput.QuoteSingleArgument));
+            var arguments = ($"{launcherArgs} {scriptAndScriptArgs}").Replace(@"C:\GIT\djangodocker\mydjangoproject", "/tmp/mydjangoproject").Replace("\\","/");
+
+            _docker = new WindowsDockerService();
+            _containerService = (IContainerService)_docker;
+
+            var build = new BuildImageParameters(@"C:\GIT\djangodocker\Dockerfile", "ptvs-mydjangoproject", "latest", "mydjangoproject", _listenerPort);
+
+            var buildResult = _docker.BuildImage(build, new CancellationToken());
+            if (buildResult) {
+                Debug.WriteLine("Build Image failed");
+            }
+
+            var webUri = new Uri(_webBrowserUrl);
+            string command = ($"python3 {arguments}").Replace(webUri.Port.ToString(), $"0.0.0.0:{webUri.Port}");
+            var create = new ContainerCreateParameters("ptvs-mydjangoproject", "latest", $"--publish {webUri.Port}:{webUri.Port}", command);
+            _container = _docker.CreateContainer(create, new CancellationToken());
+
+            _containerService.StartContainer(_container.Id, new CancellationToken());
+
+            ProcessStartInfo psi = new ProcessStartInfo {
+                FileName = @"C:\Program Files\Docker\Docker\resources\bin\docker.exe",
+                Arguments = $"wait {_container.Id}",
+                WorkingDirectory = cwd,
+                RedirectStandardError = false,
+                RedirectStandardInput = false,
+                RedirectStandardOutput = false,
+                UseShellExecute = false,
+                CreateNoWindow = false,
+            };
+
+            _process = new Process {
+                EnableRaisingEvents = true,
+                StartInfo = psi
+            };
+
+            _process.Exited += OnExited;
+            _process.Start();
+
+            try {
+                if (connection.Wait(_debuggerConnectionTimeout)) {
+                    var socket = connection.Result;
+                    if (socket != null) {
+                        _debuggerConnected = true;
+                        _stream = new DebugAdapterProcessStream(new NetworkStream(connection.Result, ownsSocket: true));
+                        _stream.Initialized += OnInitialized;
+                        _stream.Disconnected += OnDisconnected;
+                        if (!string.IsNullOrEmpty(_webBrowserUrl) && Uri.TryCreate(_webBrowserUrl, UriKind.RelativeOrAbsolute, out Uri uri)) {
+                            OnPortOpenedHandler.CreateHandler(uri.Port, null, null, ProcessExited, LaunchBrowserDebugger);
+                        }
+                    }
+                } else {
+                    Debug.WriteLine("Timed out waiting for debuggee to connect.", nameof(DebugAdapterProcess));
+                }
+            } catch (AggregateException ex) {
+                Debug.WriteLine("Error waiting for debuggee to connect {0}".FormatInvariant(ex.InnerException ?? ex), nameof(DebugAdapterProcess));
+            }
+
+            if (_stream == null && !_process.HasExited) {
+                _process.Kill();
+            }
         }
 
         private void StartProcess(JObject json) {
@@ -158,7 +243,9 @@ namespace Microsoft.PythonTools.Debugger {
 
         private void OnDisconnected(object sender, EventArgs e) {
             if (_useDocker) {
-                // TODO: Stop the docker container
+                _containerService.StopContainer(_container.Id, new CancellationToken());
+                _containerService.DeleteContainer(_container.Id, new CancellationToken());
+                _container = null;
             }
         }
 
@@ -170,6 +257,7 @@ namespace Microsoft.PythonTools.Debugger {
         }
 
         private void LaunchBrowserDebugger() {
+            Thread.Sleep(1000);
             var vsDebugger = (IVsDebugger2)VisualStudio.Shell.ServiceProvider.GlobalProvider.GetService(typeof(SVsShellDebugger));
 
             VsDebugTargetInfo2 info = new VsDebugTargetInfo2();
@@ -216,10 +304,6 @@ namespace Microsoft.PythonTools.Debugger {
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
-
-            if (_useDocker) {
-                // TODO: Remove the stopped container
-            }
         }
 
         public IntPtr Handle => _process.Handle;
@@ -245,14 +329,14 @@ namespace Microsoft.PythonTools.Debugger {
         private Task<Socket> InitializeListenerSocket() {
             if (_listenerPort < 0) {
                 var socketSource = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
-                socketSource.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+                socketSource.Bind(new IPEndPoint(IPAddress.Parse("172.20.177.145"), 0));
                 socketSource.Listen(0);
                 _listenerPort = ((IPEndPoint)socketSource.LocalEndPoint).Port;
                 Debug.WriteLine("Listening for debug connections on port {0}", _listenerPort);
-                return Task.Factory.FromAsync(socketSource.BeginAccept, socketSource.EndAccept, null);
+                return System.Threading.Tasks.Task.Factory.FromAsync(socketSource.BeginAccept, socketSource.EndAccept, null);
             }
 
-            return Task.FromResult((Socket)null);
+            return System.Threading.Tasks.Task.FromResult((Socket)null);
         }
 
         

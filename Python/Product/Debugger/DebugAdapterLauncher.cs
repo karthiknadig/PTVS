@@ -48,9 +48,37 @@ namespace Microsoft.PythonTools.Debugger {
         public void UpdateLaunchOptions(IAdapterLaunchInfo launchInfo) {
             if(launchInfo.LaunchType == LaunchType.Attach) {
                 launchInfo.DebugPort.GetPortName(out string uri);
+                JObject pathMapping1 = new JObject();
+                pathMapping1["localRoot"] = @"c:\GIT\djangodocker\mydjangoproject\";
+                pathMapping1["remoteRoot"] = "/home/kanadig/GIT/myproj/";
+                JArray arr = new JArray(pathMapping1);
+
                 JObject obj = new JObject {
-                    ["remote"] = uri
+                    ["remote"] = uri,
+                    ["pathMappings"] = arr
                 };
+                launchInfo.LaunchJson = obj.ToString();
+            } else {
+                JObject pathMapping1 = new JObject();
+                pathMapping1["localRoot"] = @"c:\GIT\djangodocker\mydjangoproject\";
+                pathMapping1["remoteRoot"] = "/tmp/mydjangoproject/";
+
+                //JObject pathMapping2 = new JObject();
+                //pathMapping2["localRoot"] = @"C:/GIT/djangodocker/mydjangoproject/";
+                //pathMapping2["remoteRoot"] = "/tmp/mydjangoproject/";
+
+                //JObject pathMapping3 = new JObject();
+                //pathMapping3["localRoot"] = @"c:\GIT\djangodocker\mydjangoproject\";
+                //pathMapping3["remoteRoot"] = "/tmp/mydjangoproject/";
+
+                //JObject pathMapping4 = new JObject();
+                //pathMapping4["localRoot"] = @"c:/GIT/djangodocker/mydjangoproject/";
+                //pathMapping4["remoteRoot"] = "/tmp/mydjangoproject/";
+
+                JArray arr = new JArray(pathMapping1);
+                JObject obj = JObject.Parse(launchInfo.LaunchJson);
+                obj["pathMappings"] = arr;
+                obj["options"] = obj["options"].Value<string>() + ";WINDOWS_CLIENT=True;FIX_FILE_PATH_CASE=True;";
                 launchInfo.LaunchJson = obj.ToString();
             }
         }

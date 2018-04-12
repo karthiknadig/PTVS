@@ -24,49 +24,49 @@ namespace Microsoft.PythonTools.Docker {
 
         internal static Process GetDockerProcess(string processName) => Process.GetProcessesByName(processName).FirstOrDefault();
 
-        public async Task<bool> BuildImageAsync(BuildImageParameters buildParams, CancellationToken ct) {
+        public  bool BuildImage(BuildImageParameters buildParams, CancellationToken ct) {
             var buildOptions = $"-t {buildParams.Image}:{buildParams.Tag} {Path.GetDirectoryName(buildParams.DockerfilePath)}";
-            var output = await BuildImageAsync(buildOptions, ct);
+            var output =  BuildImage(buildOptions, ct);
             return output.ContainsOrdinal($"Successfully tagged {buildParams.Image}:{buildParams.Tag}", true) ||
                 output.ContainsOrdinal($"Successfully built", true);
         }
 
-        public async Task<IContainer> CreateContainerAsync(ContainerCreateParameters createParams, CancellationToken ct) {
+        public  IContainer CreateContainer(ContainerCreateParameters createParams, CancellationToken ct) {
             if (createParams.ImageSourceCredentials != null) {
-                await RepositoryLoginAsync(createParams.ImageSourceCredentials, ct);
+                 RepositoryLogin(createParams.ImageSourceCredentials, ct);
             }
             try {
-                await PullImageAsync(($"{createParams.Image}:{createParams.Tag}"), ct);
+                 //PullImage(($"{createParams.Image}:{createParams.Tag}"), ct);
 
                 string createOptions = ($"{createParams.StartOptions} {createParams.Image}:{createParams.Tag} {createParams.Command}");
-                var containerId = await CreateContainerAsync(createOptions, ct);
+                var containerId =  CreateContainer(createOptions, ct);
                 if (string.IsNullOrEmpty(containerId)) {
                     throw new ContainerException(Resources.Error_ContainerIdInvalid.FormatInvariant(containerId));
                 }
-                return await GetContainerAsync(containerId, ct);
+                return  GetContainer(containerId, ct);
             } finally {
                 if (createParams.ImageSourceCredentials != null) {
-                    await RepositoryLogoutAsync(createParams.ImageSourceCredentials, ct);
+                     RepositoryLogout(createParams.ImageSourceCredentials, ct);
                 }
             }
         }
 
-        async Task IContainerService.DeleteContainerAsync(string containerId, CancellationToken ct) {
-            var result = await DeleteContainerAsync(containerId, ct);
+         void IContainerService.DeleteContainer(string containerId, CancellationToken ct) {
+            var result =  DeleteContainer(containerId, ct);
             if (!result.StartsWithOrdinal(containerId, true)) {
                 throw new ContainerException(Resources.Error_ContainerDeleteFailed.FormatInvariant(containerId, result));
             }
         }
 
-        async Task IContainerService.StartContainerAsync(string containerId, CancellationToken ct) {
-            var result = await StartContainerAsync(containerId, ct);
+         void IContainerService.StartContainer(string containerId, CancellationToken ct) {
+            var result =  StartContainer(containerId, ct);
             if (!result.StartsWithOrdinal(containerId, true)) {
                 throw new ContainerException(Resources.Error_ContainerStartFailed.FormatInvariant(containerId, result));
             }
         }
 
-        async Task IContainerService.StopContainerAsync(string containerId, CancellationToken ct) {
-            var result = await StopContainerAsync(containerId, ct);
+         void IContainerService.StopContainer(string containerId, CancellationToken ct) {
+            var result =  StopContainer(containerId, ct);
             if (!result.StartsWithOrdinal(containerId, true)) {
                 throw new ContainerException(Resources.Error_ContainerStopFailed.FormatInvariant(containerId, result));
             }
