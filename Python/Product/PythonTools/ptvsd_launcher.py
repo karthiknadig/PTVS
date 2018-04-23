@@ -38,6 +38,13 @@ import traceback
 # 7. Startup script name.
 # 8. Script arguments.
 
+# print ptvsd diagnostic info when PTVSD_DIAG is set
+show_dbg = 'PTVSD_DIAG' in os.environ
+
+if show_dbg:
+    print('Launch Args: %s' % sys.argv)
+    print('Python Path: %s' % os.environ.get('PYTHONPATH'))
+
 # change to directory we expected to start from
 os.chdir(sys.argv[1])
 
@@ -68,6 +75,12 @@ filename = sys.argv[0]
 # fix sys.path to be the script file dir
 sys.path[0] = ''
 
+def _input(msg=None):
+    try:
+        raw_input(msg)
+    except NameError:
+        input(msg)
+
 # Load the debugger package
 try:
     ptvs_lib_path = None
@@ -78,9 +91,15 @@ try:
         ptvs_lib_path = os.path.join(os.path.dirname(__file__), 'Packages')
         sys.path.append(ptvs_lib_path)
     try:
+        if show_dbg:
+            print('Sys Path: %s' % sys.path)
         import ptvsd
         import ptvsd.debugger as vspd
         ptvsd_loaded = True
+        if show_dbg:
+            print('ptvsd ver : %s' % ptvsd.__version__)
+            print('ptvsd path: %s' % os.path.abspath(ptvsd.__file__))
+            _input('Press Enter to continue. . .')
     except ImportError:
         ptvsd_loaded = False
         raise
@@ -98,10 +117,7 @@ Internal error detected. Please copy the above traceback and report at
 https://go.microsoft.com/fwlink/?LinkId=293415
 
 Press Enter to close. . .''')
-    try:
-        raw_input()
-    except NameError:
-        input()
+    _input()
     sys.exit(1)
 finally:
     if ptvs_lib_path:
