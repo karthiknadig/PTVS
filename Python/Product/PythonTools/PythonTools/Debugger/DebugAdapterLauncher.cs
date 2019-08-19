@@ -33,49 +33,97 @@ namespace Microsoft.PythonTools.Debugger {
         public const string VSCodeDebugEngineId = "{86432F39-ADFD-4C56-AA8F-AF8FCDC66039}";
         public static Guid VSCodeDebugEngine = new Guid(VSCodeDebugEngineId);
 
+        private string PythonBin { get; set; }
+
         public DebugAdapterLauncher() { }
 
         public void Initialize(IDebugAdapterHostContext context) {
         }
 
         public ITargetHostProcess LaunchAdapter(IAdapterLaunchInfo launchInfo, ITargetHostInterop targetInterop) {
-            // ITargetHostInterop provides a convenience wrapper to start the process
-            // return targetInterop.ExecuteCommandAsync(path, "");
-
-            // If you need more control use the DebugAdapterProcess
-            if (launchInfo.LaunchType == LaunchType.Attach) {
-                return DebugAdapterRemoteProcess.Attach(launchInfo.LaunchJson);
-            }
-            return DebugAdapterProcess.Start(launchInfo.LaunchJson);
+            var ptvsdAdapterDirectory = Path.GetDirectoryName(PythonToolsInstallPath.GetFile("Packages\\ptvsd\\adapter\\__init__.py"));
+            return targetInterop.ExecuteCommandAsync(PythonBin, ptvsdAdapterDirectory);
         }
 
         public void UpdateLaunchOptions(IAdapterLaunchInfo launchInfo) {
-            if (launchInfo.LaunchType == LaunchType.Attach) {
-                JObject launchJson = new JObject();
-                launchInfo.DebugPort.GetPortName(out string uri);
+            var launchJson = JObject.Parse(launchInfo.LaunchJson);
 
-                launchJson["remote"] = uri;
-                AddDebugOptions(launchJson);
-                AddRules(launchJson);
+            if (launchInfo.LaunchType == LaunchType.Launch) {
+                var config = launchJson.Value<JObject>("ConfigurationProperties");
+                var json = config ?? launchJson;
+                // Note that this can be a array or string:
+                // string -> "C:\python37\python.exe"
+                // array -> ["C:\python37\python.exe", "--interpreter-arg1", "--interpreter-arg2", ... ]
+                launchJson["python"] = json.Value<string>("exe");
+                PythonBin = json.Value<string>("exe");
 
-                launchInfo.LaunchJson = launchJson.ToString();
+                if (json.TryGetValue("program", out JToken program)) {
+                    // Note that this can be a array or string:
+                    // string -> "user_script.py"
+                    // array -> ["user_script.py", "--user-arg1", "--user-arg2", ... ]
+                    launchJson["program"] = program.Value<string>();
+                    // args can be a string or array.
+                    launchJson["args"] = json.GetValue("args");
+                } else if (launchJson.TryGetValue("module", out JToken module)) {
+                    launchJson["module"] = module.Value<string>();
+                    launchJson["args"] = json.GetValue("args");
+                } else if (launchJson.TryGetValue("code", out JToken code)) {
+                    launchJson["code"] = code.Value<string>();
+                    launchJson["args"] = json.GetValue("args");
+                } else {
+                    launchJson["program"] = json.GetValue("args");
+                    launchJson["args"] = new JArray();
+                }
+
+                var env = new JObject();
+                foreach (var e in json.Value<JArray>("env")) {
+                    env[e.Value<string>("name")] = e.Value<string>("value");
+                }
+                launchJson["env"] = env;
+                launchJson["cwd"] = json.Value<string>("cwd");
+
+                if (config != null) {
+                    launchJson.Remove("ConfigurationProperties");
+                }
+            } else {
+                PythonBin = launchJson.Value<string>("exe");
+
+                // For Attach to process all we need is the pid
+                if (launchJson.TryGetValue("processId", out JToken pid)) {
+                    launchJson["processId"] = pid.Value<int>();
+                    // NOTE: We don't need host and port because the injected debugger 
+                    // connects back to the debug adapter. This allows us to re-attach
+                    // to the same process without side effects. If we use host and port 
+                    // after detach there is no easy way to say if the port is already
+                    // opened in the debuggee. This might result is debuggee crash on 
+                    // re-attach.
+                } else {
+                    launchInfo.DebugPort.GetPortName(out string uristr);
+                    var uri = new Uri(uristr);
+
+                    launchJson["host"] = uri.Host;
+                    launchJson["port"] = uri.Port;
+                }
             }
+
+            AddDebugOptions(launchJson);
+            AddRules(launchJson);
+            launchInfo.LaunchJson = launchJson.ToString();
         }
 
         private void AddDebugOptions(JObject launchJson) {
             var debugService = (IPythonDebugOptionsService)Package.GetGlobalService(typeof(IPythonDebugOptionsService));
 
-            JArray debugOptions = new JArray();
-            if (debugService.ShowFunctionReturnValue) {
-                debugOptions.Add("ShowReturnValue");
-            }
-            if (debugService.BreakOnSystemExitZero) {
-                debugOptions.Add("BreakOnSystemExitZero");
-            }
+            // Stop on entry should always be true for VS Debug Adapter Host.
+            // If stop on entry is disabled then VS will automatically issue
+            // contnue when it sees "stopped" event with "reason=entry".
+            launchJson["stopOnEntry"] = true;
 
-            if (debugOptions.Count > 0) {
-                launchJson["debugOptions"] = debugOptions;
-            }
+            launchJson["showReturnValue"] = debugService.ShowFunctionReturnValue;
+            launchJson["breakOnSystemExitZero"] = debugService.BreakOnSystemExitZero;
+            launchJson["waitOnAbnormalExit"] = debugService.WaitOnAbnormalExit;
+            launchJson["waitOnNormalExit"] = debugService.WaitOnNormalExit;
+            launchJson["redirectOutput"] = debugService.TeeStandardOutput;
         }
 
         private void AddRules(JObject launchJson) {
